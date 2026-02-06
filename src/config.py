@@ -20,8 +20,7 @@ for d in (DATA_DIR, MODEL_DIR, LOG_DIR):
 # ==========
 # Load environment variables from .env file
 # ==========
-dotenv_path = BASE_DIR / ".env"
-load_dotenv(dotenv_path=dotenv_path, override=True)  
+load_dotenv()  
 
 # ==========
 # MT5 CONNECTION SETTINGS
