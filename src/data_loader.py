@@ -73,5 +73,36 @@ with MT5Connection() as conn:
         return df
     
 
+    def save_raw_training_data(self, df: pd.DataFrame) -> Path:
+        """
+        Save the raw data to the data/ folder as SYMBOL_TIMEFRAME_raw.csv.
+        Returns the full path to the saved file.
+        """
+        filename = f"{self.symbol}_{self.timeframe}_raw.csv"
+        out_path = DATA_DIR / filename
+        df.to_csv(out_path, index=False)
+        logging.info(f"Saved raw training data to: {out_path}")
+        return out_path
+    
+    def fetch_recent_bars(self) -> pd.DataFrame:
+        rates = mt5.copy_rates_from_pos(self.symbol, self.timeframe, 0, self.entry_history_bars)
+        if rates is None or len(rates) < self.entry_history_bars:
+            raise RuntimeError("Not enough bars fetched")
+            
+        else:
+            df = pd.DataFrame(rates)
+            
+            df["time"] = pd.to_datetime(df["time"], unit="s")
+            
+            df = df.rename(columns={
+                "time": "Datetime",
+                "open": "Open",
+                "high": "High",
+                "low": "Low",
+                "close": "Close",
+                "tick_volume": "Volume"
+            })
 
+            df.drop(columns=["spread","real_volume"], inplace=True)
+        return df
 
