@@ -6,11 +6,6 @@ from dotenv import load_dotenv
 import MetaTrader5 as mt5
 
 # ==========
-# Load environment variables from .env file
-# ==========
-load_dotenv()
-
-# ==========
 # PATHS
 # ==========
 BASE_DIR = Path(__file__).resolve().parent
@@ -21,6 +16,12 @@ LOG_DIR = BASE_DIR / "logs"
 for d in (DATA_DIR, MODEL_DIR, LOG_DIR):
     d.mkdir(parents=True, exist_ok=True)
 
+
+# ==========
+# Load environment variables from .env file
+# ==========
+dotenv_path = BASE_DIR / ".env"
+load_dotenv(dotenv_path=dotenv_path, override=True)  
 
 # ==========
 # MT5 CONNECTION SETTINGS
