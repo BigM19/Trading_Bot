@@ -1,4 +1,3 @@
-# tests/test_connection.py
 import pytest
 import MetaTrader5 as mt5
 from src.connection import MT5Connection
