@@ -4,4 +4,9 @@ version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
-dependencies = []
+dependencies = [
+    "dotenv>=0.9.9",
+    "logger>=1.4",
+    "metatrader5>=5.0.5572",
+    "pandas>=3.0.0",
+]
