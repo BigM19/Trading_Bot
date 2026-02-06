@@ -10,3 +10,8 @@ dependencies = [
     "metatrader5>=5.0.5572",
     "pandas>=3.0.0",
 ]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=9.0.2",
+]
