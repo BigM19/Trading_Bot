@@ -78,18 +78,38 @@ class DataLoader:
         if df.empty:
             raise RuntimeError(f"Failed to fetch historical data for {self.symbol}.")
 
-        logging.info(f"Received {len(df)} bars of {self.symbol} data.")     
+        logging.info(f"Received {len(df)} bars of {self.symbol} data.") 
         return df
     
-    def save_raw_training_data(self, df: pd.DataFrame) -> Path:
+    def fetch_live_data(self) -> pd.DataFrame:
         """
-        Save the raw data to the data/ folder as SYMBOL_TIMEFRAME_raw.csv.
-        Returns the full path to the saved file.
+        Fetch the most recent ENTRY_HISTORY_BARS bars for SYMBOL at DIRECTION_TIMEFRAME.
+        Returns a pandas DataFrame with:
+        ['time', 'open', 'high', 'low', 'close', 'volume']
         """
-        filename = f"{self.symbol}_{self.timeframe}_raw.csv"
+        rates = mt5.copy_rates_from_pos(
+            self.symbol,
+            self.timeframe,
+            0,
+            self.entry_history_bars
+        )
+
+        df = self.processor.clean_data(rates)
+        if df.empty:
+            raise RuntimeError(f"Failed to fetch live data for {self.symbol}.")
+
+        logging.info(f"Received {len(df)} bars of live data for {self.symbol}.") 
+        return df
+    
+    
+    def save_to_csv(self, df: pd.DataFrame, suffix="raw") -> Path:
+        """
+        Centralized method to save DataFrames to CSV with consistent naming and logging.
+        """
+        filename = f"{self.symbol}_{self.timeframe}_{suffix}.csv"
         out_path = DATA_DIR / filename
         df.to_csv(out_path, index=False)
-        logging.info(f"Saved raw training data to: {out_path}")
+        logging.info(f"Data saved to: {out_path}")
         return out_path
     
 
