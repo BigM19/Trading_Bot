@@ -169,6 +169,13 @@ class FeatureEngineering:
         df["Target"] = (df["Close"].shift(-1) > df["Close"]).astype(int)
         return df
 
-
+    @staticmethod
+    def split_labels_from_features(df: pd.DataFrame):
+        """
+        Separate features and target.
+        """
+        X = df[FeatureEngineering.get_feature_columns()]
+        y = df["Target"]
+        return X, y
 
 
