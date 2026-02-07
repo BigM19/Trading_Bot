@@ -163,3 +163,42 @@ class FeatureEngineering:
         logging.info(f"Shape of DataFrame after adding signals: {df.shape}")
         
         return df
+    
+    def get_feature_columns() -> list[str]:
+        """
+        Single source of truth. PCA and XGBoost depend on this exact order.
+        """
+        return [
+            "Open","High","Low","Close","Volume",
+            "Returns", "Range", "DOW",
+            "ROC", "RSI", "STOCH", "VROC",
+            "CMF", "MFI", "OBV", "VWAP",
+            "ATR", "BB_upper", "BB_middle", "BB_lower",
+            "Donchian_Upper", "Donchian_Lower", "Donchian_Middle",
+            "ADX", "DMP", "DMN", "CCI", "MA_8", "MA_20",
+            "Ichi_A", "Ichi_B", "Ichi_base",
+            "MACD_Line", "Signal_Line",
+            "Signal_MA", "Signal_Price_Above_MA", "Signal_MACD",
+            "Signal_RSI", "Signal_BB", "Signal_ATR", "Signal_OBV",
+            "Signal_MFI", "Signal_VROC", "Signal_ADX", "Signal_CCI",
+        ]
+        
+    def make_label(df: pd.DataFrame, horizon: int = 1) -> pd.DataFrame:
+        """
+        Create target column.
+        If next day close is higher Target=1, if lowwer Target=0.
+        """
+        df = df.copy()
+
+        df["Target"] = 0
+        df.loc[df["Close"].shift(-1) > df["Close"], "Target"] = 1
+
+        return df
+
+    def split_label_from_features(df: pd.DataFrame):
+        X = df.iloc[:,:-1]
+        y = df["Target"]
+        
+        return X, y
+    
+
