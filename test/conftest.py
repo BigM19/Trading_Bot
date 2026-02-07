@@ -1,4 +1,4 @@
-import pytest_
+import pytest
 from src.connection import MT5Connection
 from src.data_loader import DataLoader
 
