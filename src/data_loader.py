@@ -110,31 +110,3 @@ class DataLoader:
         logging.info(f"Data saved to: {out_path}")
         return out_path
     
-
-class FetchLiveData:
-    def __init__(self):
-        self.symbol = SYMBOL
-        self.timeframe = DIRECTION_TIMEFRAME
-        self.entry_history_bars = ENTRY_HISTORY_BARS
-        
-    def fetch_recent_bars(self) -> pd.DataFrame:
-        rates = mt5.copy_rates_from_pos(self.symbol, self.timeframe, 0, self.entry_history_bars)
-        if rates is None or len(rates) < self.entry_history_bars:
-            raise RuntimeError("Not enough bars fetched")
-            
-        else:
-            df = pd.DataFrame(rates)
-            
-            df["time"] = pd.to_datetime(df["time"], unit="s")
-            
-            df = df.rename(columns={
-                "time": "Datetime",
-                "open": "Open",
-                "high": "High",
-                "low": "Low",
-                "close": "Close",
-                "tick_volume": "Volume"
-            })
-
-            df.drop(columns=["spread","real_volume"], inplace=True)
-        return df
