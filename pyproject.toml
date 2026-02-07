@@ -25,3 +25,11 @@ dev = [
 markers = [
     "live: Tests that require an active MetaTrader 5 terminal and internet connection."
 ]
+filterwarnings = [
+    "ignore::UserWarning:MetaTrader5",
+    "ignore::FutureWarning:MetaTrader5",
+    "ignore::RuntimeWarning:MetaTrader5",
+    "ignore::DeprecationWarning:MetaTrader5",
+    "ignore::DeprecationWarning:pandas",
+    "ignore::FutureWarning",
+]
