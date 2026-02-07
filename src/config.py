@@ -12,8 +12,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 DATA_DIR = BASE_DIR / "data"
 MODEL_DIR = BASE_DIR / "models"
 LOG_DIR = BASE_DIR / "logs"
+TEST_DATA_DIR = BASE_DIR / "test_data"
 
-for d in (DATA_DIR, MODEL_DIR, LOG_DIR):
+for d in (DATA_DIR, TEST_DATA_DIR, MODEL_DIR, LOG_DIR):
     d.mkdir(parents=True, exist_ok=True)
 
 

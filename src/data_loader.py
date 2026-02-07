@@ -100,12 +100,12 @@ class DataLoader:
         return df
     
     
-    def save_to_csv(self, df: pd.DataFrame, suffix="raw") -> Path:
+    def save_to_csv(self, df: pd.DataFrame, suffix="raw", dir=DATA_DIR) -> Path:
         """
         Centralized method to save DataFrames to CSV with consistent naming and logging.
         """
         filename = f"{self.symbol}_{self.timeframe}_{suffix}.csv"
-        out_path = DATA_DIR / filename
+        out_path = dir / filename
         df.to_csv(out_path, index=False)
         logging.info(f"Data saved to: {out_path}")
         return out_path
