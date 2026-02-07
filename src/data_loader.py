@@ -1,11 +1,11 @@
 from datetime import datetime, timedelta
 from pathlib import Path
-
 import pandas as pd
 import MetaTrader5 as mt5
-from .config import SYMBOL, DATA_DIR, DIRECTION_TIMEFRAME, TRAIN_YEARS, ENTRY_HISTORY_BARS
-from .connection import MT5Connection
-
+from .config import (
+    SYMBOL, DATA_DIR, DIRECTION_TIMEFRAME,
+    TRAIN_YEARS, ENTRY_HISTORY_BARS
+)
 import logging
 
 logging.basicConfig(
@@ -13,7 +13,39 @@ logging.basicConfig(
     format="%(asctime)s - %(levelname)s - %(message)s"
 )
 
-with MT5Connection() as conn:
+class DataProcessor:
+    
+    @staticmethod
+    def clean_data(rates) -> pd.DataFrame:
+        """
+        Convert raw MT5 data to a clean DataFrame with proper column names and types.
+        """
+        if rates is None or len(rates) == 0:
+            logging.error("No data to clean.")
+            raise ValueError("Empty data received for cleaning.")
+            return pd.DataFrame()  # Return empty DataFrame on error
+        
+        df = pd.DataFrame(rates)
+        
+        # convert MT5 'time' to pandas datetime
+        df["time"] = pd.to_datetime(df["time"], unit="s")
+    
+        df = df.rename(columns={
+            "time": "Datetime",
+            "open": "Open",
+            "high": "High",
+            "low": "Low",
+            "close": "Close",
+            "tick_volume": "Volume"
+        })
+
+        #Drop unnecessary columns and handle missing values
+        df.drop(columns=["spread","real_volume"], inplace=True)
+        df.dropna(inplace=True)
+        
+        return df
+
+class DataLoader:
     
     def __init__(self):
         self.symbol = SYMBOL
@@ -21,24 +53,19 @@ with MT5Connection() as conn:
         self.timeframe = DIRECTION_TIMEFRAME
         self.train_years = TRAIN_YEARS
         self.entry_history_bars = ENTRY_HISTORY_BARS
+        self.processor = DataProcessor()
         
-    def get_training_date_range(self):
-        """
-        Compute (start, end) datetimes for the training range: last N years.
-        """
-        end = datetime.now()
-        start = end - timedelta(days=365 * self.train_years)
-        return start, end
     
-    def fetch_raw_training_data(self) -> pd.DataFrame:
+    def fetch_training_data(self) -> pd.DataFrame:
         """
         Fetch raw DIRECTION_TIMEFRAME candles for SYMBOL over the last TRAIN_YEARS.
         Returns a pandas DataFrame with:
         ['time', 'open', 'high', 'low', 'close', 'volume']
         """
     
-        start, end = get_training_date_range()
-        logging.info(f"Fetching {self.symbol} data from {start} to {end} ...")
+        end = datetime.now()
+        start = end - timedelta(days=365 * self.train_years)
+        logging.info(f"Fetching {self.symbol} data from {start.date()} to {end.date()} ...")
 
         rates = mt5.copy_rates_range(
             self.symbol,
@@ -47,9 +74,6 @@ with MT5Connection() as conn:
             end,
         )
 
-        if rates is None or len(rates) == 0:
-            logging.error("No data returned by copy_rates_range: %s", mt5.last_error())
-            raise RuntimeError("No historical data received from MT5.")
 
         df = pd.DataFrame(rates)
         
@@ -72,7 +96,6 @@ with MT5Connection() as conn:
     
         return df
     
-
     def save_raw_training_data(self, df: pd.DataFrame) -> Path:
         """
         Save the raw data to the data/ folder as SYMBOL_TIMEFRAME_raw.csv.
@@ -84,6 +107,13 @@ with MT5Connection() as conn:
         logging.info(f"Saved raw training data to: {out_path}")
         return out_path
     
+
+class FetchLiveData:
+    def __init__(self):
+        self.symbol = SYMBOL
+        self.timeframe = DIRECTION_TIMEFRAME
+        self.entry_history_bars = ENTRY_HISTORY_BARS
+        
     def fetch_recent_bars(self) -> pd.DataFrame:
         rates = mt5.copy_rates_from_pos(self.symbol, self.timeframe, 0, self.entry_history_bars)
         if rates is None or len(rates) < self.entry_history_bars:
@@ -105,4 +135,3 @@ with MT5Connection() as conn:
 
             df.drop(columns=["spread","real_volume"], inplace=True)
         return df
-
