@@ -74,26 +74,11 @@ class DataLoader:
             end,
         )
 
+        df = self.processor.clean_data(rates)
+        if df.empty:
+            raise RuntimeError(f"Failed to fetch historical data for {self.symbol}.")
 
-        df = pd.DataFrame(rates)
-        
-        # convert MT5 'time' (seconds since epoch) to pandas datetime
-        df["time"] = pd.to_datetime(df["time"], unit="s")
-    
-        df = df.rename(columns={
-            "time": "Datetime",
-            "open": "Open",
-            "high": "High",
-            "low": "Low",
-            "close": "Close",
-            "tick_volume": "Volume"
-        })
-
-        df.drop(columns=["spread","real_volume"], inplace=True)
-        df.dropna(inplace=True)
-        
-        logging.info(f"Received {len(df)} bars of {self.symbol} data.")
-    
+        logging.info(f"Received {len(df)} bars of {self.symbol} data.")     
         return df
     
     def save_raw_training_data(self, df: pd.DataFrame) -> Path:
