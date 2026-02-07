@@ -20,3 +20,8 @@ dev = [
 dev = [
     "pytest-mock>=3.15.1",
 ]
+
+[pytest]
+markers = [
+    "live: Tests that require an active MetaTrader 5 terminal and internet connection."
+]
