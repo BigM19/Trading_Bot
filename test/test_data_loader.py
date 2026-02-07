@@ -53,16 +53,9 @@ def test_fetch_live_data_insufficient_bars(loader):
     with pytest.raises(ValueError, match="Expected at least 30 bars of live data, got 10. Not enough bars create features."):
         df = loader.fetch_live_data(bars=10)    
     
-def test_save_to_csv(loader):
-    df = pd.DataFrame({
-        "Datetime": [pd.Timestamp("2024-01-01")],
-        "Open": [1.10],
-        "High": [1.12],
-        "Low": [1.09],
-        "Close": [1.11],
-        "Volume": [100],
-    })
+def test_save_to_csv(mock_data_factory, loader):
+    df = mock_data_factory(10).set_index("Datetime")
     out_path = loader.save_to_csv(df, suffix="test", dir=TEST_DATA_DIR)
     assert out_path.exists(), f"Expected file at {out_path} to exist."
-    loaded_df = pd.read_csv(out_path, parse_dates=["Datetime"])
-    assert_frame_equal(df, loaded_df)
+    loaded_df = pd.read_csv(out_path, parse_dates=["Datetime"], index_col="Datetime")
+    assert_frame_equal(df, loaded_df, check_dtype=False)

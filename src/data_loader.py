@@ -101,7 +101,8 @@ class DataLoader:
         """
         filename = f"{self.symbol}_{self.timeframe}_{suffix}.csv"
         out_path = dir / filename
-        df.to_csv(out_path, index=False)
+        save_index = isinstance(df.index, pd.DatetimeIndex)
+        df.to_csv(out_path, index=save_index)
         logging.info(f"Data saved to: {out_path}")
         return out_path
     
