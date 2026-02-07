@@ -51,12 +51,10 @@ class DataLoader:
         self.symbol = SYMBOL
         self.data_dir = DATA_DIR
         self.timeframe = DIRECTION_TIMEFRAME
-        self.train_years = TRAIN_YEARS
-        self.entry_history_bars = ENTRY_HISTORY_BARS
         self.processor = DataProcessor()
         
     
-    def fetch_training_data(self) -> pd.DataFrame:
+    def fetch_training_data(self, years: float = TRAIN_YEARS) -> pd.DataFrame:
         """
         Fetch raw DIRECTION_TIMEFRAME candles for SYMBOL over the last TRAIN_YEARS.
         Returns a pandas DataFrame with:
@@ -64,7 +62,7 @@ class DataLoader:
         """
     
         end = datetime.now()
-        start = end - timedelta(days=365 * self.train_years)
+        start = end - timedelta(days=365 * years)
         logging.info(f"Fetching {self.symbol} data from {start.date()} to {end.date()} ...")
 
         rates = mt5.copy_rates_range(
@@ -81,7 +79,7 @@ class DataLoader:
         logging.info(f"Received {len(df)} bars of {self.symbol} data.") 
         return df
     
-    def fetch_live_data(self) -> pd.DataFrame:
+    def fetch_live_data(self, bars: int = ENTRY_HISTORY_BARS) -> pd.DataFrame:
         """
         Fetch the most recent ENTRY_HISTORY_BARS bars for SYMBOL at DIRECTION_TIMEFRAME.
         Returns a pandas DataFrame with:
@@ -91,7 +89,7 @@ class DataLoader:
             self.symbol,
             self.timeframe,
             0,
-            self.entry_history_bars
+            bars
         )
 
         df = self.processor.clean_data(rates)
