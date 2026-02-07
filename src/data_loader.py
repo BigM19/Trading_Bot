@@ -23,7 +23,7 @@ class DataProcessor:
         if rates is None or len(rates) == 0:
             logging.error("No data to clean.")
             raise ValueError("Empty data received for cleaning.")
-            return pd.DataFrame()  # Return empty DataFrame on error
+
         
         df = pd.DataFrame(rates)
         
@@ -93,10 +93,9 @@ class DataLoader:
         )
 
         df = self.processor.clean_data(rates)
-        if df.empty:
-            raise RuntimeError(f"Failed to fetch live data for {self.symbol}.")
-
-        logging.info(f"Received {len(df)} bars of live data for {self.symbol}.") 
+        if len(df) < 30:
+            raise ValueError(f"Expected at least 30 bars of live data, got {len(df)}. Not enough bars create features.")
+        
         return df
     
     
