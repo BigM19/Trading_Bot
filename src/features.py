@@ -20,6 +20,9 @@ class FeatureEngineering:
             df["Datetime"] = pd.to_datetime(df["Datetime"])
             df = df.set_index("Datetime")
         
+        if len(df) < 30:
+            raise ValueError(f"DataFrame has only {len(df)} rows. Not enough data to create features reliably.")
+        
         # --- Add features ---
         df = FeatureEngineering._add_basic_features(df)
         df = FeatureEngineering._add_momentum_indicators(df)
@@ -27,6 +30,8 @@ class FeatureEngineering:
         df = FeatureEngineering._add_volatility_indicators(df)
         df = FeatureEngineering._add_trend_indicators(df)
         df = FeatureEngineering._add_signals(df)
+        
+        logging.info(f"Added features to DataFrame. Final shape: {df.shape}")
         
         # --- Final cleanup ---
         df.dropna(inplace=True)

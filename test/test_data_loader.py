@@ -22,6 +22,13 @@ def test_clean_data():
     assert df.iloc[0]["Open"] == 1.10
     assert isinstance(df.iloc[0]["Datetime"], pd.Timestamp)
 
+def test_clean_data_empty():
+    empty_rates = np.array([], dtype=[('time', '<i8'), ('open', '<f8'), ('high', '<f8'), 
+                                    ('low', '<f8'), ('close', '<f8'), ('tick_volume', '<i8'),
+                                    ('spread', '<i4'), ('real_volume', '<i8')])
+    with pytest.raises(ValueError, match="Empty data received for cleaning."):
+        df = DataProcessor.clean_data(empty_rates)
+    
 
 @pytest.mark.live
 def test_fetch_training_data(loader):
@@ -42,6 +49,9 @@ def test_fetch_live_data(loader):
     assert "Volume" in df.columns
     assert "spread" not in df.columns
     
+def test_fetch_live_data_insufficient_bars(loader):
+    with pytest.raises(ValueError, match="Expected at least 30 bars of live data, got 10. Not enough bars create features."):
+        df = loader.fetch_live_data(bars=10)    
     
 def test_save_to_csv(loader):
     df = pd.DataFrame({

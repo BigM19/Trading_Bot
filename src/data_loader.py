@@ -21,9 +21,7 @@ class DataProcessor:
         Convert raw MT5 data to a clean DataFrame with proper column names and types.
         """
         if rates is None or len(rates) == 0:
-            logging.error("No data to clean.")
             raise ValueError("Empty data received for cleaning.")
-
         
         df = pd.DataFrame(rates)
         
@@ -73,9 +71,7 @@ class DataLoader:
         )
 
         df = self.processor.clean_data(rates)
-        if df.empty:
-            raise RuntimeError(f"Failed to fetch historical data for {self.symbol}.")
-
+        
         logging.info(f"Received {len(df)} bars of {self.symbol} data.") 
         return df
     
