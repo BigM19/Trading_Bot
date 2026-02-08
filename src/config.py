@@ -46,7 +46,6 @@ SELECTED_TIMEFRAME = os.getenv("TIMEFRAME", "H1")
 
 DIRECTION_TIMEFRAME = TIMEFRAMES[SELECTED_TIMEFRAME]
 
-
 # ==========
 # TRAINING SETUP
 # ==========
@@ -127,3 +126,9 @@ COLS = [
     "profit",
     "reason_close",
 ]
+
+# ==========
+# MLFLOW SETUP
+# ==========
+MLFLOW_TRACKING_URI = os.getenv("MLFLOW_TRACKING_URI", "http://localhost:5000")
+MLFLOW_EXPERIMENT_NAME = f"{SYMBOL}_XGB_{SELECTED_TIMEFRAME}"
