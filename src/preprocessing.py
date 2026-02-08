@@ -4,7 +4,7 @@ from statsmodels.tsa.stattools import adfuller
 from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
 import joblib
-from config import MODEL_DIR
+from .config import MODEL_DIR
 import logging
 
 logging.basicConfig(
@@ -12,7 +12,7 @@ logging.basicConfig(
     format="%(asctime)s - %(levelname)s - %(message)s"
 )
 
-class Preprocess:
+class Preprocessor:
     def __init__(self, n_components=0.8):
         self.n_components = n_components
         self.scaler = StandardScaler()
