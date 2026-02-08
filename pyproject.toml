@@ -9,6 +9,7 @@ dependencies = [
     "logger>=1.4",
     "metatrader5>=5.0.5572",
     "pandas>=3.0.0",
+    "statsmodels>=0.14.6",
     "ta>=0.11.0",
 ]
 
