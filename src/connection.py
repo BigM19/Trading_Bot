@@ -1,4 +1,4 @@
-from .config import MT5_LOGIN, MT5_PASSWORD, MT5_SERVER, MT5_TERMINAL_PATH, SYMBOL
+from .config import MT5_LOGIN, MT5_PASSWORD, MT5_SERVER, MT5_TERMINAL_PATH
 import MetaTrader5 as mt5
 import time
 from functools import wraps
@@ -33,7 +33,6 @@ class MT5Connection():
         self.password = MT5_PASSWORD
         self.server = MT5_SERVER
         self.terminal_path = MT5_TERMINAL_PATH
-        self.symbol = SYMBOL
         
     def __enter__(self):
         """Allows usage: with MT5Connection() as conn:"""
