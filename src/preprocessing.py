@@ -42,21 +42,23 @@ class Preprocessor:
         
     def fit_transform(self, X: pd.DataFrame) -> pd.DataFrame:  
         """Fits the pipeline on training data."""
-        self.feature_cols = X.columns.tolist()
-        X_scaled = self.scaler.fit_transform(X)
+        X_stat = self.find_and_diff_columns(X)
+        self.feature_cols = X_stat.columns.tolist()
+        X_scaled = self.scaler.fit_transform(X_stat)
         X_pca = self.pca.fit_transform(X_scaled)
         
         self.is_fitted = True
-        return self._to_pca_df(X_pca, X.index)  
+        return self._to_pca_df(X_pca, X_stat.index)  
     
     def transform(self, X: pd.DataFrame) -> pd.DataFrame:
         """Transforms validation/live data using fitted state."""
         if not self.is_fitted:
             raise RuntimeError("Preprocessor must be fitted before transform.")
             
-        X_scaled = self.scaler.transform(X[self.feature_cols])
+        X_stat = self.find_and_diff_columns(X)
+        X_scaled = self.scaler.transform(X_stat[self.feature_cols])
         X_pca = self.pca.transform(X_scaled)
-        return self._to_pca_df(X_pca, X.index)
+        return self._to_pca_df(X_pca, X_stat.index)
 
     def _to_pca_df(self, data, index):
         cols = [f"PC{i+1}" for i in range(data.shape[1])]

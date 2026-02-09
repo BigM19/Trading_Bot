@@ -87,7 +87,6 @@ TRAIN_INFO_PATH = MODEL_DIR / f"train_info_{SELECTED_TIMEFRAME}.json"
 # The actual XGBoost Model
 MODEL_PATH = MODEL_DIR / f"xgb_direction_{SELECTED_TIMEFRAME}.json"
 
-
 # ==========
 # TRADING SETUP
 # ==========
